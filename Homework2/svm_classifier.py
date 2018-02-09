@@ -6,10 +6,11 @@ import numpy as np
 
 def main():
     df = pd.read_csv('adult_data.csv', header = None)
-    train, validate, test = np.split(df.sample(frac = 1), [int(0.8*len(df)), int(0.9*len(df))])
-    print('train: ', len(train))
-    print('validate: ', len(validate))
-    print('test: ', len(test))
+    print(len(df))
+    # train, validate, test = np.split(df.sample(frac = 1), [int(0.8*len(df)), int(0.9*len(df))])
+    # print('train: ', len(train))
+    # print('validate: ', len(validate))
+    # print('test: ', len(test))
 
     # print(df)
 main()
