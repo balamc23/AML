@@ -1,13 +1,17 @@
 import csv
 import pandas as pd
+import numpy as np
 
 # def load_data():
 
 def main():
-    filename = df.to_csv('adult_data.csv')
-    x = pd.read_csv('adult_data.csv')
-    print(x)
+    df = pd.read_csv('adult_data.csv', header = None)
+    train, validate, test = np.split(df.sample(frac = 1), [int(0.8*len(df)), int(0.9*len(df))])
+    print('train: ', len(train))
+    print('validate: ', len(validate))
+    print('test: ', len(test))
 
+    # print(df)
 main()
 
 
