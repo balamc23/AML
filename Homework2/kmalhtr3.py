@@ -138,8 +138,6 @@ class Support_Vector_Machine:
 
         plt.show()
         
-print("HELLOOOOO")
-
 
 data_dict = {-1:np.array([[1,7],
                           [2,8],
@@ -148,6 +146,8 @@ data_dict = {-1:np.array([[1,7],
              1:np.array([[5,1],
                          [6,-1],
                          [7,3],])}
+
+print(len(data_dict))
 
 svm = Support_Vector_Machine()
 svm.fit(data=data_dict)
