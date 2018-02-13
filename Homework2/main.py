@@ -82,15 +82,15 @@ for reg_const in reg_consts:
             row = list(row)
             x = row[0:-1]
             y = row[-1]
-            print(x)
-            print(y)
+            # print(x)
+            # print(y)
 
             if (y*np.dot(x, w)) < 1:
-                w = w + step_size * ((x*y) + (-2*reg_const*w))
+                w = w + step_size * (np.multiply(x, y) + (-2*reg_const*w))
             else:
                 w = w + step_size*(-2*reg_const*w)
 
-        eval_examples = train_set.samples(n=50).values
+        eval_examples = train_set.sample(n=50).values
         num_correct = 0
         for count, row in enumerate(eval_examples):
             row = list(row)
@@ -104,7 +104,7 @@ for reg_const in reg_consts:
             elif pred < 0 and y == -1:
                 num_correct += 1
 
-        print('Accuracy for epoch', count, 'is', float(num_correct)/len(eval_examples))
+            print('Accuracy for epoch', count, 'is', float(num_correct)/len(eval_examples))
 
 # test_ex = list(validate_set[0])
 # print(test_ex)
