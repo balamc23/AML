@@ -70,50 +70,59 @@ total_cost = 0
 
 # SGD below
 num_features = len(comb_df.columns) - 1
-w = np.zeros(num_features)
 num_steps = 300
 step_size = float(1)/num_steps
 num_epochs = 50
 validate_set = validate_set.values
 # print(validate_set)
+sums = [0, 0, 0, 0]
 
-for reg_const in reg_consts:
+for reg_ct, reg_const in enumerate(reg_consts):
+    w = np.zeros(num_features)
     print('For regularization constant value of', reg_const, 'the accuracy values are as follows:')
     for i in range(num_epochs):
-        for row in validate_set:
-            row = list(row)
-            x = row[0:-1]
-            y = row[-1]
-            # print(x)
-            # print(y)
-
-            if (y*np.dot(x, w)) < 1:
-                w = w + step_size * (np.multiply(x, y) + (-2*reg_const*w))
-            else:
-                w = w + step_size*(-2*reg_const*w)
-
         eval_examples = train_set.sample(n=50).values
-        num_correct = 0
-        for row in eval_examples:
-            row = list(row)
-            x = row[0:-1]
-            y = row[-1]
+        for step_count in range(num_steps):
+            for row in validate_set:
+                row = list(row)
+                x = row[0:-1]
+                y = row[-1]
+                # print(x)
+                # print(y)
 
-            pred = np.dot(w, x)
+                if (y*np.dot(x, w)) < 1:
+                    w = w + step_size * (np.multiply(x, y) + (-2*reg_const*w))
+                else:
+                    w = w + step_size*(-2*reg_const*w)
 
-            if pred > 0 and y == 1:
-                num_correct += 1
-            elif pred < 0 and y == -1:
-                num_correct += 1
+                # Evaluating the classifier on the set held out for evaluation
+            if ((step_count+1) % 30) == 0:
+                num_correct = 0
+                for row in eval_examples:
+                    row = list(row)
+                    x = row[0:-1]
+                    y = row[-1]
 
-        print('Accuracy for epoch', i+1, 'is', float(num_correct)/len(eval_examples))
+                    pred = np.dot(w, x)
+
+                    if pred > 0 and y == 1:
+                        num_correct += 1
+                    elif pred < 0 and y == -1:
+                        num_correct += 1
+                sums[reg_ct] += float(num_correct)/len(eval_examples)
+                print('Accuracy for epoch', i+1, 'at step', step_count+1, 'is', float(num_correct)/len(eval_examples))
+
     print('=======================================================================================')
 
-# test_ex = list(validate_set[0])
-# print(test_ex)
-#
-# prod = np.dot(test_ex, w)
-# print(prod)
+
+max_ind = 0
+for i,elem in enumerate(sums):
+    average = (elem/num_epochs)
+    if(average > sums[max_ind]):
+        max_ind = i
+
+# print(max_ind)
+final_reg_const = reg_consts[max_ind]
 
 
 
