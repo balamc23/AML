@@ -53,7 +53,8 @@ train_set, validate_set, test_set = np.split(comb_df.sample(frac = 1), [int(0.8*
 # print(len(test_set))
 
 # SVM code below
-reg_consts = [1e-3, 1e-2, 1e-1, 1]
+# reg_consts = [1e-3, 1e-2, 1e-1, 1]
+reg_consts = [1e-3]
 # print(reg_consts[0], reg_consts[1], reg_consts[2], reg_consts[3])
 
 # Hinge Loss Function
@@ -92,7 +93,7 @@ for reg_const in reg_consts:
 
         eval_examples = train_set.sample(n=50).values
         num_correct = 0
-        for count, row in enumerate(eval_examples):
+        for row in eval_examples:
             row = list(row)
             x = row[0:-1]
             y = row[-1]
@@ -104,7 +105,7 @@ for reg_const in reg_consts:
             elif pred < 0 and y == -1:
                 num_correct += 1
 
-            print('Accuracy for epoch', count, 'is', float(num_correct)/len(eval_examples))
+        print('Accuracy for epoch', i+1, 'is', float(num_correct)/len(eval_examples))
 
 # test_ex = list(validate_set[0])
 # print(test_ex)
