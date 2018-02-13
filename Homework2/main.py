@@ -18,7 +18,7 @@ comb_df.to_csv('missdrop_cont_attrs.csv', sep=',', header=None)
 # print comb_df
 
 # Scaling each column to have unit variance
-comb_df = normalized_df=(comb_df-comb_df.min())/(comb_df.max()-comb_df.min())
+comb_df = (comb_df-comb_df.min())/(comb_df.max()-comb_df.min())
 print(comb_df)
 
 # Splitting the dataset into 80% training, 10% validation, and 10% testing
@@ -31,3 +31,7 @@ print(len(test_set))
 # SVM code below
 reg_consts = [1e-3, 1e-2, 1e-1, 1]
 print(reg_consts[0], reg_consts[1], reg_consts[2], reg_consts[3])
+
+# Hinge Loss Function
+predicted_label = a_T*x + b
+curr_cost = max(0, 1 - true_label*predicted_label)
