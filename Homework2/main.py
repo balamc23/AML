@@ -16,7 +16,7 @@ for i in range((len(labels))):
 # print(labels_df)
 # print(labels)
 labels_df = pd.DataFrame(labels)
-print(labels_df)
+# print(labels_df)
 
 
 
@@ -24,7 +24,7 @@ print(labels_df)
 comb_df = comb_df.ix[:, (0,2,4,10,11,12)]
 # comb_df.add(labels_df,axis='columns')
 # comb_df.insert(0,labels_df,series)
-print(comb_df)
+# print(comb_df)
 
 
 # print comb_df
@@ -38,12 +38,12 @@ comb_df.to_csv('missdrop_cont_attrs.csv', sep=',', header=None)
 
 # Scaling each column to have unit variance
 comb_df = (comb_df-comb_df.min())/(comb_df.max()-comb_df.min())
-print(comb_df)
+# print(comb_df)
 
 comb_df = comb_df.reset_index(drop=True)
 labels_df = labels_df.reset_index(drop=True)
 comb_df = pd.concat([comb_df, labels_df], axis=1)
-print(comb_df)
+# print(comb_df)
 
 # Splitting the dataset into 80% training, 10% validation, and 10% testing
 train_set, validate_set, test_set = np.split(comb_df.sample(frac = 1), [int(0.8*len(comb_df)), int(0.9*len(comb_df))])
@@ -74,7 +74,7 @@ num_steps = 300
 step_size = float(1)/num_steps
 num_epochs = 50
 validate_set = validate_set.values
-print(validate_set)
+# print(validate_set)
 
 for reg_const in reg_consts:
     for i in range(num_epochs):
@@ -82,9 +82,11 @@ for reg_const in reg_consts:
             row = list(row)
             x = row[0:-1]
             y = row[-1]
+            print(x)
+            print(y)
 
             if (y*np.dot(x, w)) < 1:
-                w = w + step_size*(x*y) + (-2*reg_const*w)
+                w = w + step_size * ((x*y) + (-2*reg_const*w))
             else:
                 w = w + step_size*(-2*reg_const*w)
 
@@ -109,26 +111,6 @@ for reg_const in reg_consts:
 #
 # prod = np.dot(test_ex, w)
 # print(prod)
-
-# for i in range(iterations):
-#         for rows in np.asarray(trainingData):
-#
-#             rows = list(rows)
-#
-#             x = rows[0:-1]
-#             x = map(float, x)   #converting strings/chars to floats
-#
-#             x.append(-1)
-#             x = np.asarray(x)
-#             y = rows[-1]
-#
-#             if y == '+':
-#                 y = 1
-#             else:   # y == '-'
-#                 y = -1
-#
-#             w_t1 = w_t + learning_rate*(y - np.dot(w_t, x))*x
-#             w_t = w_t1
 
 
 
