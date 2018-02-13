@@ -53,8 +53,8 @@ train_set, validate_set, test_set = np.split(comb_df.sample(frac = 1), [int(0.8*
 # print(len(test_set))
 
 # SVM code below
-# reg_consts = [1e-3, 1e-2, 1e-1, 1]
-reg_consts = [1e-3]
+reg_consts = [1e-3, 1e-2, 1e-1, 1]
+# reg_consts = [1e-3]
 # print(reg_consts[0], reg_consts[1], reg_consts[2], reg_consts[3])
 
 # Hinge Loss Function
@@ -78,6 +78,7 @@ validate_set = validate_set.values
 # print(validate_set)
 
 for reg_const in reg_consts:
+    print('For regularization constant value of', reg_const, 'the accuracy values are as follows:')
     for i in range(num_epochs):
         for row in validate_set:
             row = list(row)
@@ -106,6 +107,7 @@ for reg_const in reg_consts:
                 num_correct += 1
 
         print('Accuracy for epoch', i+1, 'is', float(num_correct)/len(eval_examples))
+    print('=======================================================================================')
 
 # test_ex = list(validate_set[0])
 # print(test_ex)
