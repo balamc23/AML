@@ -7,6 +7,7 @@ comb_df = df.append(df2)
 labels_df = comb_df.ix[:, 14]
 labels = labels_df.as_matrix()
 for i in range((len(labels))):
+<<<<<<< HEAD
     if(labels[i][1] == '<'):
         labels[i] = -1
     else:
@@ -15,6 +16,16 @@ for i in range((len(labels))):
 # print comb_df
 # print(labels_df)
 # print(labels)
+=======
+	if(labels[i][1] == '<'):
+		labels[i] = -1
+	else:
+		labels[i] = 1
+
+# print comb_df
+# print(labels_df)
+# print(labels)	
+>>>>>>> afcb54f64ab9433db0036137486aabee42079ba9
 labels_df = pd.DataFrame(labels)
 print(labels_df)
 
@@ -55,6 +66,7 @@ train_set, validate_set, test_set = np.split(comb_df.sample(frac = 1), [int(0.8*
 # SVM code below
 reg_consts = [1e-3, 1e-2, 1e-1, 1]
 # print(reg_consts[0], reg_consts[1], reg_consts[2], reg_consts[3])
+<<<<<<< HEAD
 
 # Hinge Loss Function
 total_cost = 0
@@ -138,3 +150,10 @@ for reg_const in reg_consts:
 
 
 
+=======
+
+
+# Hinge Loss Function
+# predicted_label = a_T*x + b
+# curr_cost = max(0, 1 - true_label*predicted_label)
+>>>>>>> afcb54f64ab9433db0036137486aabee42079ba9
