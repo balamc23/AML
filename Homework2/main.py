@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 df = pd.read_csv('adult.data.csv', header=None)
 df2 = pd.read_csv('adult.test.csv', skiprows=1, header=None)
@@ -41,7 +42,10 @@ num_steps = 300
 step_size = float(1)/num_steps
 num_epochs = 50
 validate_set = validate_set.values
-sums = np.zeros(len(reg_consts))
+num_reg_consts = len(reg_consts)
+sums = np.zeros(num_reg_consts)
+acc_arrs = []
+coeff_arrs = []
 
 # Finding the best regularization constant
 batch_size = 100
@@ -49,6 +53,8 @@ batch_size = 100
 for reg_ct, reg_const in enumerate(reg_consts):
     w = np.zeros(num_features)
     print('For regularization constant value of', reg_const, 'the accuracy values are as follows:')
+    accs = []
+    coeffs = []
     for i in range(num_epochs):
         eval_examples = train_set.sample(n=50).values
         for step_count in range(num_steps):
@@ -65,6 +71,7 @@ for reg_ct, reg_const in enumerate(reg_consts):
 
             # Evaluating the classifier on the set held out for evaluation
             if ((step_count+1) % 30) == 0:
+                curr_acc = 0
                 num_correct = 0
                 for row in eval_examples:
                     row = list(row)
@@ -77,10 +84,41 @@ for reg_ct, reg_const in enumerate(reg_consts):
                         num_correct += 1
                     elif pred < 0 and y == -1:
                         num_correct += 1
-                sums[reg_ct] += float(num_correct)/len(eval_examples)
-                print('Accuracy for epoch', i+1, 'at step', step_count+1, 'is', float(num_correct)/len(eval_examples))
+                curr_acc = float(num_correct)/len(eval_examples)
+                sums[reg_ct] += curr_acc
+                accs.append(curr_acc)
+                coeffs.append(np.linalg.norm(w))
+                print('Accuracy for epoch', i+1, 'at step', step_count+1, 'is', curr_acc)
 
+    acc_arrs.append(accs)
+    coeff_arrs.append(coeffs)
     print('=======================================================================================')
+
+
+x_pts = np.asarray([i*30 for i in range(1,501)])
+acc_arrs = np.asarray(acc_arrs)
+
+plt.figure(1)
+plt.plot(x_pts, acc_arrs[0])
+plt.plot(x_pts, acc_arrs[1])
+plt.plot(x_pts, acc_arrs[2])
+plt.plot(x_pts, acc_arrs[3])
+plt.legend(['1e-3', '1e-2', '1e-2', '1e-2'])
+plt.xlim(0, 15000)
+plt.xlabel('Number of steps')
+plt.ylabel('Accuracy')
+plt.show()
+
+plt.figure(2)
+plt.plot(x_pts, coeff_arrs[0])
+plt.plot(x_pts, coeff_arrs[1])
+plt.plot(x_pts, coeff_arrs[2])
+plt.plot(x_pts, coeff_arrs[3])
+plt.legend(['1e-3', '1e-2', '1e-2', '1e-2'])
+plt.xlim(0, 15000)
+plt.xlabel('Number of steps')
+plt.ylabel('Coefficient Magnitude')
+plt.show()
 
 max_ind = 0
 for i,elem in enumerate(sums):
