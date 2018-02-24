@@ -61,13 +61,18 @@ label_names = label_names['label_names']
 first_set = unpickle('cifar-10-batches-py/data_batch_1')
 print(len(first_set['data'][9999][0:1024]))
 
+num_images = len(first_set['data'])
 
 # Calculating the mean image for each category (label)
-labels = [i for i in range(9)]
+labels = [i for i in range(10)]
 rbgs = np.zeros((10, 3))
-mean_img_dict = zip(labels, rbgs)
+labels_rbgs = zip(labels, rbgs)
+mean_img_dict = dict()
 
-num_images = len(first_set['data'])
+for label, rbg in labels_rbgs:
+    mean_img_dict[label] = rbg
+
+print(mean_img_dict)
 
 for i in range(num_images):
     label = first_set['labels'][i]
@@ -85,51 +90,51 @@ for i in range(10):
 
 print(mean_img_dict)
 
-# Features
-x = first_set['data']
-features_df = pd.DataFrame(data=x, columns=['pixel_vals' + str(i) for i in range(3072)])
-
-# Labels
-y = first_set['labels']
-labels_df = pd.DataFrame(data=y, columns=['target'])
-
-labels_targets_df = pd.concat([features_df, labels_df], axis = 1)
-print(labels_targets_df)
-
-# Sorting by label (category) value
-labels_targets_df = labels_targets_df.sort('target')
-print(labels_targets_df)
-
-
-# PCA stuff down below
-# # Standardizing/Scaling the features
-x = StandardScaler().fit_transform(x)
-
-pca = PCA(n_components=20)
-principalComponents = pca.fit_transform(x)
-print(principalComponents)
-print(len(principalComponents))
-
-principalDf = pd.DataFrame(data = principalComponents
-             , columns = ['principal component ' + str(i) for i in range(1,21)])
-
-finalDf = pd.concat([principalDf, labels_df], axis = 1)
-
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(1,1,1)
-ax.set_xlabel('Principal Component 1', fontsize = 15)
-ax.set_ylabel('Principal Component 2', fontsize = 15)
-ax.set_title('20 component PCA', fontsize = 20)
-targets = [i for i in range(9)]
-colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'w', 'C0', 'C1']
-
-for target, color in zip(targets,colors):
-    indicesToKeep = finalDf['target'] == target
-    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
-               , finalDf.loc[indicesToKeep, 'principal component 2']
-               , c = color
-               , s = 50)
-ax.legend(targets)
-ax.grid()
-plt.show()
+# # Features
+# x = first_set['data']
+# features_df = pd.DataFrame(data=x, columns=['pixel_vals' + str(i) for i in range(3072)])
+#
+# # Labels
+# y = first_set['labels']
+# labels_df = pd.DataFrame(data=y, columns=['target'])
+#
+# labels_targets_df = pd.concat([features_df, labels_df], axis = 1)
+# print(labels_targets_df)
+#
+# # Sorting by label (category) value
+# labels_targets_df = labels_targets_df.sort('target')
+# print(labels_targets_df)
+#
+#
+# # PCA stuff down below
+# # # Standardizing/Scaling the features
+# x = StandardScaler().fit_transform(x)
+#
+# pca = PCA(n_components=20)
+# principalComponents = pca.fit_transform(x)
+# print(principalComponents)
+# print(len(principalComponents))
+#
+# principalDf = pd.DataFrame(data = principalComponents
+#              , columns = ['principal component ' + str(i) for i in range(1,21)])
+#
+# finalDf = pd.concat([principalDf, labels_df], axis = 1)
+#
+# fig = plt.figure(figsize = (8,8))
+# ax = fig.add_subplot(1,1,1)
+# ax.set_xlabel('Principal Component 1', fontsize = 15)
+# ax.set_ylabel('Principal Component 2', fontsize = 15)
+# ax.set_title('20 component PCA', fontsize = 20)
+# targets = [i for i in range(9)]
+# colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'w', 'C0', 'C1']
+#
+# for target, color in zip(targets,colors):
+#     indicesToKeep = finalDf['target'] == target
+#     ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+#                , finalDf.loc[indicesToKeep, 'principal component 2']
+#                , c = color
+#                , s = 50)
+# ax.legend(targets)
+# ax.grid()
+# plt.show()
 
