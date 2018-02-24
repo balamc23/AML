@@ -47,6 +47,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import cPickle
 import pandas as pd
+import numpy as np
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -58,14 +59,39 @@ with open('cifar-10-batches-py/batches.meta', 'rb') as fo:
 label_names = label_names['label_names']
 
 first_set = unpickle('cifar-10-batches-py/data_batch_1')
-# print(len(first_set['data'][9999]))
+print(len(first_set['data'][9999][0:1024]))
+
+
+# Calculating the mean image for each category (label)
+mean_img_dict = dict()
+num_images = len(first_set['data'])
+
+for i in range(num_images):
+    label = first_set['labels'][i]
+    red_vals = np.asarray(first_set['data'][i][0:1024])
+    blu_vals = np.asarray(first_set['data'][i][1025:2048])
+    grn_vals = np.asarray(first_set['data'][i][2049:3072])
+
+
 
 # Features
 x = first_set['data']
+features_df = pd.DataFrame(data=x, columns=['pixel_vals' + str(i) for i in range(3072)])
 
 # Labels
 y = first_set['labels']
-# Standardizing/Scaling the features
+labels_df = pd.DataFrame(data=y, columns=['target'])
+
+labels_targets_df = pd.concat([features_df, labels_df], axis = 1)
+print(labels_targets_df)
+
+# Sorting by label (category) value
+labels_targets_df = labels_targets_df.sort('target')
+print(labels_targets_df)
+
+
+# PCA stuff down below
+# # Standardizing/Scaling the features
 x = StandardScaler().fit_transform(x)
 
 pca = PCA(n_components=20)
@@ -76,7 +102,6 @@ print(len(principalComponents))
 principalDf = pd.DataFrame(data = principalComponents
              , columns = ['principal component ' + str(i) for i in range(1,21)])
 
-labels_df = pd.DataFrame(data=y, columns=['target'])
 finalDf = pd.concat([principalDf, labels_df], axis = 1)
 
 fig = plt.figure(figsize = (8,8))
