@@ -1,0 +1,5 @@
+Resource Links that might be useful:
+
+https://towardsdatascience.com/pca-using-python-scikit-learn-e653f8989e60
+
+https://etav.github.io/python/scikit_pca.html
