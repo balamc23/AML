@@ -44,6 +44,7 @@
 # Below is Pranav's code
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import scale
 import matplotlib.pyplot as plt
 import cPickle
 import pandas as pd
@@ -64,6 +65,7 @@ print(len(first_set['data'][9999][0:1024]))
 num_images = len(first_set['data'])
 
 # Calculating the mean image for each category (label)
+num_labels = 10
 labels = [i for i in range(10)]
 rbgs = np.zeros((10, 3))
 labels_rbgs = zip(labels, rbgs)
@@ -72,7 +74,7 @@ mean_img_dict = dict()
 for label, rbg in labels_rbgs:
     mean_img_dict[label] = rbg
 
-print(mean_img_dict)
+# print(mean_img_dict)
 
 for i in range(num_images):
     label = first_set['labels'][i]
@@ -89,6 +91,52 @@ for i in range(10):
         mean_img_dict[i][j] = mean_img_dict[i][j]/num_images
 
 print(mean_img_dict)
+
+# pca = PCA(20)
+# print(pca)
+
+# print first_set['data']
+# print first_set['labels']
+# X = first_set['data']
+# # X = StandardScaler().fit_transform(X) # This line currently gives a warning
+# X = scale(X)    # should be equivalent to above line
+# pca = PCA(n_components=20)
+# pca.fit(X)
+# var = pca.explained_variance_ratio_
+# var1 = np.cumsum(np.round(pca.explained_variance_ratio_, decimals=4)*100)
+# print var1
+# plt.plot(var1)
+# plt.show()
+
+
+pca = PCA(n_components=20)
+vars_arr = []
+vars1_arr = []
+
+for i in range(num_labels):
+    X = mean_img_dict[i]
+    X = scale(X)
+    pca.fit(X)
+    var = pca.explained_variance_ratio_
+    var1 = np.cumsum(np.round(pca.explained_variance_ratio_, decimals=4)*100)
+    vars1_arr.append(var1)
+
+for var1 in vars1_arr:
+    plt.plot(var1)
+
+plt.show()
+
+# X_proj = pca.fit_transform(X)
+# print X_proj.shape
+# print "=================="
+# print X_proj
+# # plt.scatter(X_proj[:,0])
+#
+# pca = PCA().fit(X)
+# plt.plot(np.cumsum(pca.explained_variance_ratio_))
+# plt.xlabel('number of components')
+# plt.ylabel('cumulative explained variance')
+# plt.show()
 
 # # Features
 # x = first_set['data']

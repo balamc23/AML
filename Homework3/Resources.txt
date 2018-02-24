@@ -3,3 +3,9 @@ Resource Links that might be useful:
 https://towardsdatascience.com/pca-using-python-scikit-learn-e653f8989e60
 
 https://etav.github.io/python/scikit_pca.html
+
+https://shankarmsy.github.io/posts/pca-sklearn.html
+
+https://jakevdp.github.io/PythonDataScienceHandbook/05.09-principal-component-analysis.html
+
+Really good resource: https://www.analyticsvidhya.com/blog/2016/03/practical-guide-principal-component-analysis-python/
