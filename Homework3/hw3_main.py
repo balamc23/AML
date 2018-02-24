@@ -63,7 +63,10 @@ print(len(first_set['data'][9999][0:1024]))
 
 
 # Calculating the mean image for each category (label)
-mean_img_dict = dict()
+labels = [i for i in range(9)]
+rbgs = np.zeros((10, 3))
+mean_img_dict = zip(labels, rbgs)
+
 num_images = len(first_set['data'])
 
 for i in range(num_images):
@@ -72,7 +75,15 @@ for i in range(num_images):
     blu_vals = np.asarray(first_set['data'][i][1025:2048])
     grn_vals = np.asarray(first_set['data'][i][2049:3072])
 
+    mean_img_dict[label][0] += np.mean(red_vals)
+    mean_img_dict[label][1] += np.mean(blu_vals)
+    mean_img_dict[label][2] += np.mean(grn_vals)
 
+for i in range(10):
+    for j in range(3):
+        mean_img_dict[i][j] = mean_img_dict[i][j]/num_images
+
+print(mean_img_dict)
 
 # Features
 x = first_set['data']
