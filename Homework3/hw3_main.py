@@ -43,6 +43,14 @@ print(len(first_set['data'][9999]))
 
 num_images = len(first_set['data'])
 
+# Sorting the images by category (label)
+sorted_imgs = [[] for i in range(num_labels)]
+for i in range(num_images):
+    label = first_set['labels'][i]
+    sorted_imgs[label].append(first_set['data'][i])
+
+print(sorted_imgs)
+
 # Calculating the mean image for each category (label)
 num_labels = 10
 num_pixels = 3072
@@ -54,9 +62,9 @@ mean_img_dict = dict()
 for label, rbg in labels_rbgs:
     mean_img_dict[label] = rbg
 
-# print(len(mean_img_dict[0]))
-# print(len(first_set['data'][0]))
-# print(mean_img_dict)
+print(len(mean_img_dict[0]))
+print(len(first_set['data'][0]))
+print(mean_img_dict)
 print("=========")
 print(mean_img_dict[0])
 print("=========")
@@ -65,6 +73,7 @@ for i in range(num_images):
     label = first_set['labels'][i]
     for j in range(num_pixels):
         mean_img_dict[label][j] += first_set['data'][i][j]
+        # To make this more efficient, have to use sorted_imgs and use np.cumsum for each category (label)
 
 print(mean_img_dict)
 
@@ -74,14 +83,7 @@ for i in range(num_labels):
 
 print(mean_img_dict)
 
-# print('image means', mean_img_dict)
-
-# Sorting the images by category (label)
-sorted_imgs = [[] for i in range(num_labels)]
-for i in range(num_images):
-    label = first_set['labels'][i]
-    sorted_imgs[label].append(first_set['data'][i])
-
+print('image means', mean_img_dict)
 
 # PCA stuff below
 pca = PCA(n_components=20)
@@ -104,22 +106,22 @@ plt.legend([str(i) for i in range(10)], loc='best')
 
 
 # Task 2 below
-# dist_matrix = np.zeros((10, 10))
-# # print(dist_matrix)
-#
-# for i in range(num_labels):
-#   for j in range(num_labels):
-#     if (j > i):
-#       first_img, second_img = mean_img_dict[i], mean_img_dict[j]
-#       # print('1', first_img, '2', second_img)
-#       dist_matrix[i][j] = distance.euclidean(first_img, second_img)
+dist_matrix = np.zeros((10, 10))
 # print(dist_matrix)
-#
-# dist_mat_df = pd.DataFrame(dist_matrix)
-# Ar_dist = distance.squareform(distance.pdist(dist_mat_df.T))
-# DM_dist = skbio.stats.distance.DistanceMatrix(Ar_dist)
-# PCoA = skbio.stats.ordination.pcoa(DM_dist)
-# PCoA.plot(df=dist_mat_df, column='distances')
+
+for i in range(num_labels):
+  for j in range(num_labels):
+    if (j > i):
+      first_img, second_img = mean_img_dict[i], mean_img_dict[j]
+      # print('1', first_img, '2', second_img)
+      dist_matrix[i][j] = distance.euclidean(first_img, second_img)
+print(dist_matrix)
+
+dist_mat_df = pd.DataFrame(dist_matrix)
+Ar_dist = distance.squareform(distance.pdist(dist_mat_df.T))
+DM_dist = skbio.stats.distance.DistanceMatrix(Ar_dist)
+PCoA = skbio.stats.ordination.pcoa(DM_dist)
+PCoA.plot(df=dist_mat_df, column='distances')
 
 
 
