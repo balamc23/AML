@@ -42,6 +42,8 @@ first_set = unpickle('cifar-10-batches-py/data_batch_1')
 print(len(first_set['data'][9999]))
 
 num_images = len(first_set['data'])
+num_labels = 10
+num_pixels = 3072
 
 # Sorting the images by category (label)
 sorted_imgs = [[] for i in range(num_labels)]
@@ -52,8 +54,6 @@ for i in range(num_images):
 print(sorted_imgs)
 
 # Calculating the mean image for each category (label)
-num_labels = 10
-num_pixels = 3072
 labels = [i for i in range(num_labels)]
 rbgs = np.zeros((num_labels, num_pixels))
 labels_rbgs = zip(labels, rbgs)
