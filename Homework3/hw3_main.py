@@ -23,7 +23,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
 import matplotlib.pyplot as plt
-import _pickle as cPickle
+import pickle as cPickle
 import numpy as np
 from scipy.spatial import distance
 import skbio
@@ -39,34 +39,35 @@ with open('cifar-10-batches-py/batches.meta', 'rb') as fo:
 label_names = label_names['label_names']
 
 first_set = unpickle('cifar-10-batches-py/data_batch_1')
-print(len(first_set['data'][9999][0:1024]))
+print(len(first_set['data'][9999]))
 
 num_images = len(first_set['data'])
 
 # Calculating the mean image for each category (label)
 num_labels = 10
-labels = [i for i in range(10)]
-rbgs = np.zeros((10, 3))
+num_pixels = 3072
+labels = [i for i in range(num_labels)]
+rbgs = np.zeros((num_labels, num_pixels))
 labels_rbgs = zip(labels, rbgs)
 mean_img_dict = dict()
 
 for label, rbg in labels_rbgs:
     mean_img_dict[label] = rbg
 
-# print(mean_img_dict)
+print(len(mean_img_dict[0]))
+print(len(first_set['data'][0]))
+print(mean_img_dict)
 
 for i in range(num_images):
     label = first_set['labels'][i]
-    red_vals = np.asarray(first_set['data'][i][0:1024])
-    blu_vals = np.asarray(first_set['data'][i][1025:2048])
-    grn_vals = np.asarray(first_set['data'][i][2049:3072])
+    for j in range(num_pixels):
+        print(j)
+        mean_img_dict[label][i] += first_set['data'][i][j]
 
-    mean_img_dict[label][0] += np.mean(red_vals)
-    mean_img_dict[label][1] += np.mean(blu_vals)
-    mean_img_dict[label][2] += np.mean(grn_vals)
+print(mean_img_dict)
 
-for i in range(10):
-    for j in range(3):
+for i in range(num_labels):
+    for j in range(num_pixels):
         mean_img_dict[i][j] = mean_img_dict[i][j]/num_images
 
 # print('image means', mean_img_dict)
@@ -97,6 +98,8 @@ for var1 in vars1_arr:
 plt.legend([str(i) for i in range(10)], loc='best')
 # plt.show()
 
+
+# Task 2 below
 dist_matrix = np.zeros((10, 10))
 # print(dist_matrix)
 
@@ -113,11 +116,6 @@ Ar_dist = distance.squareform(distance.pdist(dist_mat_df.T))
 DM_dist = skbio.stats.distance.DistanceMatrix(Ar_dist)
 PCoA = skbio.stats.ordination.pcoa(DM_dist)
 PCoA.plot(df=dist_mat_df, column='distances')
-
-
-
-
-
 
 
 
