@@ -1,37 +1,9 @@
-# Below is Bala's code
-# The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes,
-# with 6000 images per class. There are 50000 training images and 10000 test images. 
-# The dataset is divided into five training batches and one test batch, 
-# each with 10000 images. The test batch contains exactly 1000 
-# randomly-selected images from each class. The training batches 
-# contain the remaining images in random order, but some training batches 
-# may contain more images from one class than another. Between them, 
-# the training batches contain exactly 5000 images from each class.
-
-# airplane
-# automobile
-# bird
-# cat
-# deer
-# dog
-# frog
-# horse
-# ship
-# truck
-
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import scale
 import matplotlib.pyplot as plt
 import pickle as cPickle
 import numpy as np
-from scipy.spatial import distance
-import skbio
-import pandas as pd
 import math
-from skbio import DistanceMatrix
 from sklearn import manifold
-from sklearn.metrics import euclidean_distances
 
 def unpickle(file):
     with open(file, 'rb') as fo:
@@ -74,35 +46,35 @@ print('image means', mean_img_dict)
 
 # PCA stuff below
 pca = PCA(n_components=20)
+pcas_arr = []
 vars_arr = []
 vars1_arr = []
 
 for i in range(num_labels):
     X = sorted_imgs[i]
-    X = scale(X)
     pca.fit(X)
+    pcas_arr.append(pca)
     var = pca.explained_variance_ratio_
     var1 = np.cumsum(np.round(pca.explained_variance_ratio_, decimals=4)*100)
     vars1_arr.append(var1)
 
+    print('1. var', var)
+    print('2. var1', var1)
+    print('3. sum', np.sum(var1))
 # Uncomment bottom 4 lines to show Task 1 plot
-# for var1 in vars1_arr:
-#     plt.plot(var1)
-#
-# plt.legend([str(i) for i in range(10)], loc='best')
-# plt.show()
+plt.figure(1)
+for var1 in vars1_arr:
+    plt.plot(var1)
+
+plt.legend([label_names[i] for i in range(10)], loc='best')
+plt.xlabel('Number of Principal Components used')
+plt.ylabel('Accuracy')
 
 
-# # Task 2 below
+# Task 2 below
 dist_matrix = np.zeros((10, 10))
 for i in range(num_labels):
-  for j in range(num_labels):
-      '''
-       Only computing values that haven't been already computed (avoiding redundancies)
-       Might have to change this because they want us to include our 10x10 distance
-       matrix in our report
-      '''
-      if (j > i):
+    for j in range(num_labels):
         dist_matrix[i][j] = math.sqrt(np.sum((mean_img_dict[i] - mean_img_dict[j])**2))
 print("newest implementation")
 print(dist_matrix)
@@ -114,8 +86,53 @@ def reshape_2D(mean_image_dist_arr):
     return scaled_down
 
 should_plot_this = reshape_2D(dist_matrix)
-print(should_plot_this)
 
-plt.scatter(should_plot_this[:, 0], should_plot_this[:, 1],
-            color='darkorange', s=100, lw=0, label='NMDS')
+plt.figure(2)
+x,y = zip(*should_plot_this)
+plt.scatter(x,y)
+i = 0
+for ab in zip(x,y):
+    plt.annotate(label_names[i], xy=ab,textcoords='data')
+    i+=1
+
+plt.title('PCoA 2D Map of Means of Each Category')
+plt.grid()
 plt.show()
+
+
+# Task 3 below
+# Calculating error with using mean image
+err_by_categ = []
+
+for i in range(num_labels):
+    curr_categ_mean_img = mean_img_dict[i]
+    curr_categ_imgs = sorted_imgs[i]
+    categ_err = 0
+    for j in range(len(curr_categ_imgs)):
+        curr_err = abs(np.mean(curr_categ_mean_img - curr_categ_imgs[j]))
+        categ_err += curr_err
+        print(curr_err)
+    err_by_categ.append(categ_err)
+
+print(err_by_categ)
+
+# Calculating
+for i in range(num_labels):
+    curr_pca = pcas_arr[i]
+    for j in range(num_labels):
+        if j > i:
+            other_categ_imgs = sorted_imgs[j]
+            other_categ_imgs_pca = curr_pca.transform(other_categ_imgs)
+            projected = curr_pca.inverse_transform(other_categ_imgs_pca)
+            print('length', len(projected))
+            print('projected', projected)
+
+
+
+
+
+
+
+
+
+
