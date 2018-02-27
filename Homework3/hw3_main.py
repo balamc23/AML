@@ -63,6 +63,7 @@ for i in range(num_labels):
 pcas_arr = []
 vars1_arr = []
 
+# Citation: https://www.analyticsvidhya.com/blog/2016/03/practical-guide-principal-component-analysis-python/
 for i in range(num_labels):
     X = sorted_imgs[i]
     pca = PCA(n_components=20)
@@ -79,8 +80,6 @@ for var1 in vars1_arr:
 plt.legend([label_names[i] for i in range(10)], loc='best')
 plt.xlabel('Number of Principal Components used')
 plt.ylabel('Accuracy')
-# locs, labels = plt.xticks()
-# plt.xlim(0, 20)
 plt.xticks( [0, 5, 10, 15, 20], ('0', '5', '10', '15', '20'))
 plt.xlim(0, 20)
 plt.ylim(0, 100)
@@ -97,12 +96,12 @@ print(dist_matrix)
 print('=========================================')
 
 
-def reshape_2D(dist_arr):
+def dims_reduc(dist_arr):
     mds = manifold.MDS(n_components=2)
     mds_trans = mds.fit_transform(dist_arr)
     return mds_trans
 
-should_plot_this = reshape_2D(dist_matrix)
+should_plot_this = dims_reduc(dist_matrix)
 
 plt.figure(2)
 x,y = zip(*should_plot_this)
@@ -118,6 +117,7 @@ plt.title('PCoA 2D Map of Means of Each Category')
 # Task 3 below
 # Calculating error from using class B's principal components to
 # represent the original images of class A
+# Citation: https://stackoverflow.com/questions/36566844/pca-projecting-and-reconstruction-in-scikit
 errs_matrix = np.zeros((10, 10))
 for i in range(num_labels):
     curr_pca = pcas_arr[i]
@@ -128,12 +128,8 @@ for i in range(num_labels):
         other_categ_imgs = np.asarray(other_categ_imgs)
         error = np.sum((other_categ_imgs - projected)**2)
         errs_matrix[i][j] = error
-        # print('error for categories', label_names[i], label_names[j], error)
-print('Error matrix below')
-print(errs_matrix)
-print('=========================================')
 
-# Similarity matrixL
+# Similarity matrix
 simil_matrix = np.zeros((10, 10))
 for i in range(num_labels):
     for j in range(num_labels):
@@ -144,25 +140,18 @@ print('Similarity matrix below')
 print(simil_matrix)
 print('=========================================')
 
-# print('Reshaped 2D Similarity matrix below')
-# reshaped_simil_matrix = reshape_2D(simil_matrix)
-# print(reshaped_simil_matrix)
-# print('=========================================')
-#
-# plt.figure(3)
-# x,y = zip(*reshaped_simil_matrix)
-# plt.scatter(x, y)
-# i = 0
-# for ab in zip(x,y):
-#     plt.annotate(label_names[i], xy=ab,textcoords='data')
-#     i+=1
-#
-# plt.xlim(-10000000000, 10000000000)
-# plt.ylim(-10000000000, 10000000000)
-# plt.title('Similarity Measures for Each Category')
-# plt.show()
+reshaped_simil_matrix = dims_reduc(simil_matrix)
+plt.figure(3)
+x,y = zip(*reshaped_simil_matrix)
+plt.scatter(x, y)
+i = 0
+for ab in zip(x,y):
+    plt.annotate(label_names[i], xy=ab,textcoords='data')
+    i+=1
 
-
-
-
-
+plt.xticks( [i*5000000000 for i in range(-3,4)],
+            ([str(i*5000000000) for i in range(-3,4)]))
+plt.yticks( [i*5000000000 for i in range(-3,4)],
+            ([str(i*5000000000) for i in range(-3,4)]))
+plt.title('Similarity Measures for Each Category')
+plt.show()
